@@ -3,9 +3,12 @@ let height = 600;
 
 let boids = [];
 let boidVel = 2;
-let visual_range = 200
+let visual_range = 50
 let boid_scale = 0.5;
-let boid_turnrate = 0.1;
+let boid_turnrate = 0.5;
+let cohesion_strength = 0.1;
+let separation_strength = 0.1;
+let alignment_strength = 0.1;
 
 let padding = 30;
 
@@ -26,11 +29,13 @@ function generateBoids(n) {
     b.set_range(visual_range);
     b.set_scale(boid_scale);
     b.set_turnrate(boid_turnrate);
+    b.set_cohesion_strength(cohesion_strength);
+    b.set_alignment_strength(alignment_strength);
+    b.set_separation_strength(separation_strength);
 
     boids.push(b);
 
   }
-  console.log(boids.length);
 }
 
 function draw() {
@@ -51,7 +56,7 @@ function draw() {
     b.move(boids);
 
     if (b.x < padding || b.x > width - padding || b.y < padding || b.y > height - padding)
-      b.turn_toward(width / 2, height / 2, 2, 0.5);
+      b.turn_toward_point(width / 2, height / 2, 2, 0.5);
 
     b.show();
 

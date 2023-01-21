@@ -65,13 +65,24 @@ class Boid {
 
     // Cohestion
     this.centroid = centroid(this.neighbors);
-    this.turn_toward(this.centroid[0], this.centroid[1], this.cohesion_strength, 0.1);
+    this.turn_toward_point(this.centroid[0], this.centroid[1], this.cohesion_strength, 0.1);
 
     // Separation
 
 
     // Alignment
+    let avg_x = cos(this.dir);
+    let avg_y = sin(this.dir);
+    for (let n of this.neighbors) {
 
+      avg_x += cos(n.dir);
+      avg_y += sin(n.dir);
+
+    }
+    avg_x /= this.neighbors.length;
+    avg_y /= this.neighbors.length;
+    let avg_dir = atan2(avg_y, avg_x);
+    this.turn_toward_angle(avg_dir, this.alignment_strength, 0.1);
 
     // Apply movement    
     this.x += Math.cos(this.dir) * this.vel;
@@ -97,7 +108,25 @@ class Boid {
 
   }
 
-  turn_toward(x, y, strength, tolerance) {
+  turn_toward_angle(angle, strength, tolerance) {
+
+    let diff = angle_diff(angle, this.dir);
+
+    if (diff > tolerance) {
+
+      let dir = sin(this.dir - angle);
+      
+      if (dir > 0)
+        this.steer_left(strength);
+      
+      else
+        this.steer_right(strength);
+
+    }
+
+  }
+
+  turn_toward_point(x, y, strength, tolerance) {
     
     let dx = x - this.x;
     let dy = y - this.y;
@@ -105,7 +134,9 @@ class Boid {
 
     // line(this.x, this.y, cos(angle_to) * 20 + this.x, sin(angle_to) * 20 + this.y);
 
-    let diff = acos(cos(angle_to) * cos(this.dir) + sin(angle_to) * sin(this.dir));
+    this.turn_toward_angle(angle_to, strength, tolerance);/*
+
+    let diff = angle_diff(angle_to, this.dir);
 
     if (diff > tolerance) {
 
@@ -117,7 +148,7 @@ class Boid {
       else
         this.steer_right(strength);
 
-    }
+    }*/
   }
 
   show() {
@@ -188,5 +219,11 @@ function centroid(points) {
   y /= points.length;
 
   return [x, y];
+
+}
+
+function angle_diff(a1, a2) {
+
+  return acos(cos(a1) * cos(a2) + sin(a1) * sin(a2));
 
 }
