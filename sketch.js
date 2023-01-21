@@ -5,6 +5,9 @@ let boids = [];
 let boidVel = 2;
 let visual_range = 200
 let boid_scale = 0.5;
+let boid_turnrate = 0.1;
+
+let padding = 30;
 
 function setup() {
   // put setup code here
@@ -18,10 +21,11 @@ function setup() {
 
 function generateBoids(n) {
   for (let i = 0; i < n; i++) {
-    let b = new Boid(random(0, width), random(0, height), random(0, 2 * 3.14159), boidVel);
+    let b = new Boid(random(0, width), random(0, height), random(-Math.PI, Math.PI), boidVel);
 
     b.set_range(visual_range);
     b.set_scale(boid_scale);
+    b.set_turnrate(boid_turnrate);
 
     boids.push(b);
 
@@ -33,19 +37,26 @@ function draw() {
 
   background(0);
 
-    point(width / 2, height / 2);
+  point(width / 2, height / 2);
+
   for (let b of boids) {
+
     if (b == null) {
+
       point(width / 2, height / 2);
       break;
+
     }
+
     b.move(boids);
-    if (b.x > width) b.x = 0;
-    if (b.x < 0) b.x = width;
-    if (b.y > height) b.y = 0;
-    if (b.y < 0) b.y = height;
+
+    if (b.x < padding || b.x > width - padding || b.y < padding || b.y > height - padding)
+      b.turn_toward(width / 2, height / 2, 2);
+
     b.show();
+
   }
+  
   boids[0].visualize_neighbors();
 
 }

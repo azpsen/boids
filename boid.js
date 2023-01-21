@@ -9,8 +9,9 @@ class Boid {
 
     this.visual_range = 200;
     this.scale = 1;
-
+    this.turnrate = 0.01;
     this.size = 8;
+
     this.neighbors = [];
     this.neighbors_dist = [];
     this.centroid = [this.x, this.y];
@@ -28,6 +29,12 @@ class Boid {
   set_scale(s) {
 
     this.scale = s;
+
+  }
+
+  set_turnrate(t) {
+
+    this.turnrate = t;
 
   }
 
@@ -55,19 +62,55 @@ class Boid {
   
   }
 
-  move(boids) {
+  move(boids, w, h) {
 
-    this.scan_neighbors(boids);
+    this.scan_neighbors(boids, w, h);
     this.centroid = centroid(this.neighbors);
-    this.steer();
+    // this.steer();
 
     this.x += Math.cos(this.dir) * this.vel;
     this.y += Math.sin(this.dir) * this.vel;
 
   }
 
-  steer() {
+  steer_left(strength) {
 
+    this.dir -= this.turnrate * strength;
+
+    if (this.dir <= Math.PI)
+      this.dir += 2 * Math.PI;
+
+  }
+
+  steer_right(strength) {
+
+    this.dir += this.turnrate * strength;
+
+    if (this.dir >= Math.PI)
+      this.dir -= 2 * Math.PI;
+
+  }
+
+  turn_toward(x, y, strength) {
+    
+    let dx = x - this.x;
+    let dy = y - this.y;
+    let angle_to = atan2(dy, dx);
+
+    let diff = acos(cos(angle_to) * cos(this.dir) + sin(angle_to) * sin(this.dir));
+
+    if (diff > 0.4) {
+
+      let dir = sin(this.dir - angle_to);
+      console.log(dir);
+      
+      if (dir > 0)
+        this.steer_left(strength);
+      
+      else
+        this.steer_right(strength);
+
+    }
   }
 
   show() {
@@ -111,7 +154,7 @@ function toroidal_dist_sq(x1, y1, x2, y2) {
   let dx = abs(x2 - x1);
   let dy = abs(y2 - y1);
 
-  if (dx > 0.5)
+  if (dx > width / 2)
     dx = 1.0 - dx;
   
   if (dy > 0.5)
