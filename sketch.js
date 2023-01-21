@@ -1,9 +1,11 @@
-let width = 600;
+let width = 800;
 let height = 600;
 
 let boids = [];
-let boidVel = 1;
+let boidVel = 2;
 let num_flockmates = 3;
+let visual_range = 200
+let boid_scale = 0.5;
 
 function setup() {
   // put setup code here
@@ -12,12 +14,19 @@ function setup() {
 
   angleMode(RADIANS);
 
-  generateBoids(500);
+  generateBoids(100);
 }
 
 function generateBoids(n) {
   for (let i = 0; i < n; i++) {
-    boids.push(new Boid(random(0, width), random(0, height), random(0, 2 * 3.14159), boidVel, num_flockmates));
+    let b = new Boid(random(0, width), random(0, height), random(0, 2 * 3.14159), boidVel);
+
+    b.set_flockmates(num_flockmates);
+    b.set_range(visual_range);
+    b.set_scale(boid_scale);
+
+    boids.push(b);
+
   }
   console.log(boids.length);
 }

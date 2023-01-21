@@ -1,18 +1,39 @@
 class Boid {
 
-  constructor(x, y, dir, vel, num_flockmates) {
+  constructor(x, y, dir, vel) {
 
     this.x = x;
     this.y = y;
     this.dir = dir;
     this.vel = vel;
-    this.num_flockmates = num_flockmates;
+
+    this.num_flockmates = 3;
+    this.visual_range = 200;
+    this.scale = 1;
 
     this.size = 8;
     this.neighbors = [];
     this.neighbors_dist = [];
 
     this.vis_neighbors = false;
+
+  }
+
+  set_flockmates(n) {
+
+    this.num_flockmates = n;
+
+  }
+
+  set_range(r) {
+    
+    this.visual_range = r;
+
+  }
+
+  set_scale(s) {
+
+    this.scale = s;
 
   }
 
@@ -24,6 +45,9 @@ class Boid {
     for (let b of boids) {
 
       let b_dist = toroidal_dist_sq(this.x, this.y, b.x, b.y);
+
+      if (b_dist > this.visual_range ** 2)
+        continue;
 
       if (this.neighbors.length <= this.num_flockmates) {
 
@@ -84,7 +108,7 @@ class Boid {
     translate(this.x, this.y);
     rotate(this.dir + radians(90));
     translate(-this.x, -this.y);
-    triangle(this.x - this.size / 2, this.y + this.size, this.x + this.size / 2, this.y + this.size, this.x, this.y - this.size);
+    triangle(this.x - this.size / 2 * this.scale, this.y + this.size * this.scale, this.x + this.size / 2 * this.scale, this.y + this.size * this.scale, this.x, this.y - this.size * this.scale);
     pop();
 
     if (this.vis_neighbors) {
