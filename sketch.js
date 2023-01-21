@@ -3,7 +3,6 @@ let height = 600;
 
 let boids = [];
 let boidVel = 2;
-let num_flockmates = 3;
 let visual_range = 200
 let boid_scale = 0.5;
 
@@ -21,7 +20,6 @@ function generateBoids(n) {
   for (let i = 0; i < n; i++) {
     let b = new Boid(random(0, width), random(0, height), random(0, 2 * 3.14159), boidVel);
 
-    b.set_flockmates(num_flockmates);
     b.set_range(visual_range);
     b.set_scale(boid_scale);
 
@@ -32,7 +30,7 @@ function generateBoids(n) {
 }
 
 function draw() {
-  // put drawing code here
+
   background(0);
 
     point(width / 2, height / 2);
@@ -49,4 +47,5 @@ function draw() {
     b.show();
   }
   boids[0].visualize_neighbors();
+
 }

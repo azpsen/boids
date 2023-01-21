@@ -7,21 +7,15 @@ class Boid {
     this.dir = dir;
     this.vel = vel;
 
-    this.num_flockmates = 3;
     this.visual_range = 200;
     this.scale = 1;
 
     this.size = 8;
     this.neighbors = [];
     this.neighbors_dist = [];
+    this.centroid = [this.x, this.y];
 
     this.vis_neighbors = false;
-
-  }
-
-  set_flockmates(n) {
-
-    this.num_flockmates = n;
 
   }
 
@@ -46,33 +40,11 @@ class Boid {
 
       let b_dist = toroidal_dist_sq(this.x, this.y, b.x, b.y);
 
-      if (b_dist > this.visual_range ** 2)
-        continue;
-
-      if (this.neighbors.length <= this.num_flockmates) {
+      if (b_dist < this.visual_range ** 2) {
 
         this.neighbors.push(b);
         this.neighbors_dist.push(b_dist);
-      
-      }
-      else {
 
-        // Find the boid the farthest distance from this
-        let furthest_boid = 0;
-
-        for (let i = 0; i < this.neighbors.length; i++) {
-
-          if (this.neighbors_dist[i] > this.neighbors_dist[furthest_boid])
-            furthest_boid = i;
-
-        }
-        // Swap out furthest boid for new one
-        if (b_dist < this.neighbors_dist[furthest_boid]) {
-
-          this.neighbors_dist[furthest_boid] = b_dist;
-          this.neighbors[furthest_boid] = b;
-        
-        }
       }
     }
   }
@@ -86,6 +58,7 @@ class Boid {
   move(boids) {
 
     this.scan_neighbors(boids);
+    this.centroid = centroid(this.neighbors);
     this.steer();
 
     this.x += Math.cos(this.dir) * this.vel;
@@ -102,15 +75,7 @@ class Boid {
     fill(255);
     stroke(255);
 
-    // Move to origin, rotate, then move back and draw
-    // This ensures each boid rotates around its own center
-    push();
-    translate(this.x, this.y);
-    rotate(this.dir + radians(90));
-    translate(-this.x, -this.y);
-    triangle(this.x - this.size / 2 * this.scale, this.y + this.size * this.scale, this.x + this.size / 2 * this.scale, this.y + this.size * this.scale, this.x, this.y - this.size * this.scale);
-    pop();
-
+    // Visualize neighbors
     if (this.vis_neighbors) {
 
       for (let n of this.neighbors) {
@@ -123,8 +88,18 @@ class Boid {
 
     }
 
+    // Move to origin, rotate, then move back and draw
+    // This ensures each boid rotates around its own center
+    push();
+    translate(this.x, this.y);
+    rotate(this.dir + radians(90));
+    translate(-this.x, -this.y);
+    triangle(this.x - this.size / 2 * this.scale, this.y + this.size * this.scale, this.x + this.size / 2 * this.scale, this.y + this.size * this.scale, this.x, this.y - this.size * this.scale);
+    pop();
+
   }
 }
+
 
 // Toroidal squared distance between objects
 // - Finds the shortest distance between two objects
@@ -143,5 +118,25 @@ function toroidal_dist_sq(x1, y1, x2, y2) {
     dy = 1.0 - dy;
   
   return (dx * dx + dy * dy);
+
+}
+
+// Centroid of n points
+function centroid(points) {
+
+  let x = 0;
+  let y = 0;
+
+  for (let p of points) {
+
+    x += p.x;
+    y += p.y;
+
+  }
+
+  x /= points.length;
+  y /= points.length;
+
+  return [x, y];
 
 }
