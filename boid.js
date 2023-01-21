@@ -11,6 +11,9 @@ class Boid {
     this.scale = 1;
     this.turnrate = 0.01;
     this.size = 8;
+    this.cohesion_strength = 0.2;
+    this.separation_strength = 0.2;
+    this.alignment_strength = 0.2;
 
     this.neighbors = [];
     this.neighbors_dist = [];
@@ -20,25 +23,19 @@ class Boid {
 
   }
 
-  set_range(r) {
-    
-    this.visual_range = r;
+  set_range(r) { this.visual_range = r; }
 
-  }
+  set_scale(s) { this.scale = s; }
 
-  set_scale(s) {
+  set_turnrate(t) { this.turnrate = t; }
 
-    this.scale = s;
+  set_cohesion_strength(c) { this.cohesion_strength = c; }
 
-  }
+  set_separation_strength(c) { this.separation_strength = c; }
 
-  set_turnrate(t) {
+  set_alignment_strength(c) { this.alignment_strength = c; }
 
-    this.turnrate = t;
-
-  }
-
-  scan_neighbors(boids) {
+  get_neighbors(boids) {
     
     this.neighbors = [];
     this.neighbors_dist = [];
@@ -64,10 +61,19 @@ class Boid {
 
   move(boids, w, h) {
 
-    this.scan_neighbors(boids, w, h);
-    this.centroid = centroid(this.neighbors);
-    // this.steer();
+    this.get_neighbors(boids, w, h);
 
+    // Cohestion
+    this.centroid = centroid(this.neighbors);
+    this.turn_toward(this.centroid[0], this.centroid[1], this.cohesion_strength, 0.1);
+
+    // Separation
+
+
+    // Alignment
+
+
+    // Apply movement    
     this.x += Math.cos(this.dir) * this.vel;
     this.y += Math.sin(this.dir) * this.vel;
 
@@ -96,6 +102,8 @@ class Boid {
     let dx = x - this.x;
     let dy = y - this.y;
     let angle_to = atan2(dy, dx);
+
+    // line(this.x, this.y, cos(angle_to) * 20 + this.x, sin(angle_to) * 20 + this.y);
 
     let diff = acos(cos(angle_to) * cos(this.dir) + sin(angle_to) * sin(this.dir));
 
