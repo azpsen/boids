@@ -91,7 +91,7 @@ class Boid {
 
   }
 
-  turn_toward(x, y, strength) {
+  turn_toward(x, y, strength, tolerance) {
     
     let dx = x - this.x;
     let dy = y - this.y;
@@ -99,10 +99,9 @@ class Boid {
 
     let diff = acos(cos(angle_to) * cos(this.dir) + sin(angle_to) * sin(this.dir));
 
-    if (diff > 0.4) {
+    if (diff > tolerance) {
 
       let dir = sin(this.dir - angle_to);
-      console.log(dir);
       
       if (dir > 0)
         this.steer_left(strength);

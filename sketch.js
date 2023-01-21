@@ -51,12 +51,12 @@ function draw() {
     b.move(boids);
 
     if (b.x < padding || b.x > width - padding || b.y < padding || b.y > height - padding)
-      b.turn_toward(width / 2, height / 2, 2);
+      b.turn_toward(width / 2, height / 2, 2, 0.5);
 
     b.show();
 
   }
   
-  boids[0].visualize_neighbors();
+  // boids[0].visualize_neighbors();
 
 }
